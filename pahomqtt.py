@@ -2,36 +2,25 @@ import paho.mqtt.client as mqtt
 import time
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, rc):
-	print("Connected with result code "+str(rc))
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-#	client.subscribe("$SYS/#")
-	print("connected")
-	client.subscribe("esp/test")
+def on_connect(client, userdata,flags, rc):
+    client.subscribe("esp/test")
+    print "The connection to the MQTT server is established."
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-	print(msg.topic+" "+str(msg.payload))
-	if msg.payload.decode() == "rbp exit":
-		print("Ordered to exit")
-		client.disconnect()
+    print msg.topic + " " + str(msg.payload)
+    if msg.payload == 'exit':
+        print "Recieved exit command"
+        client.disconnect()
 
 client = mqtt.Client("rbp")
+client.username_pw_set("pi","codexpress")
 client.on_connect = on_connect
 client.on_message = on_message
-client.username_pw_set("username","password")
-client.connect("192.168.1.137", 1883, 60)
-print("After connect")
+client.connect("localhost", 1883, 60)
 
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
-#client.loop_start()
-client.subscribe("esp/test,0")
-client.publish("esp/test","rbp python message")
-time.sleep(4)
-#client.loop_stop()
-#client.loop_forever()
-#client.disconnect()
+def main():
+    client.loop_forever()
+
+if __name__ == '__main__':
+    main()

@@ -78,7 +78,7 @@ void reconnect() {
 	while (!client.connected()) {
 		Serial.print("Attempting MQTT connection...");
 		// Attempt to connect, just a name to identify the client
-		if (client.connect("UNO","username","password")) {
+		if (client.connect("UNO","pi","codexpress")) {
 			Serial.println("connected");
 			// Once connected, publish an announcement...
 			client.publish("esp/test","Hello World from ESP!");

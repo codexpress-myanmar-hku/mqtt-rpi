@@ -8,19 +8,6 @@ import socket
 logging.basicConfig(filename="logs.log" , level=logging.DEBUG)
 
 
-#Logging server 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-
-class MyServer(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        with open('logs.log', 'rb') as file: 
-            self.wfile.write(file.read())
-
-
 #Function to get the current time
 def timeNow():
     return str(time.asctime(time.localtime())) 
@@ -58,8 +45,6 @@ except socket.error:
 
 
 def main():
-    myServer = HTTPServer(('localhost', 8080), MyServer)
-    myServer.serve_forever()
     client.loop_forever()
 
 if __name__ == '__main__':

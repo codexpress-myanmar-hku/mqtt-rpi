@@ -58,9 +58,9 @@ except socket.error:
 
 
 def main():
-    client.loop_forever()
     myServer = HTTPServer(('localhost', 8080), MyServer)
     myServer.serve_forever()
+    client.loop_forever()
 
 if __name__ == '__main__':
     main()

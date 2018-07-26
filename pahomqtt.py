@@ -26,10 +26,15 @@ def on_message(client, userdata, msg):
         data = msg.payload.decode()
         logging.info("Recieved data: " + str(data) + " TimeStamp: " + timeNow())
         try:
+            data = str(data)
+            data_array = data.split(",")
+            data_array = [float(d) for d in data_array]
+            logging.info(data_array)
+            """
             r = requests.post("http://localhost:3000/data", json=json.loads(data))
             if r and r.status_code == 200:
                 logging.info("Delivery at: " + timeNow())
-        
+            """
         except json.JSONDecodeError:
             logging.warning("Invalid JSON at: " + timeNow())
     

@@ -12,6 +12,18 @@ logging.basicConfig(filename="logs.log" , level=logging.DEBUG)
 def timeNow():
     return str(time.asctime(time.localtime())) 
 
+#We will use a pre-defined conversion of data into JSON
+def convertTOJSON(x):
+    data = {
+        "temp": x[0],
+        "humidity": x[1],
+        "soil_moist": x[2],
+        "soil_temp" : x[3],
+        "input_voltage": x[4],
+        "input_current": x[5]
+    }   
+    return data
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata,flags, rc):
     client.subscribe("esp/test")
@@ -25,18 +37,22 @@ def on_message(client, userdata, msg):
     else:
         data = msg.payload.decode()
         logging.info("Recieved data: " + str(data) + " TimeStamp: " + timeNow())
+        x = None
         try:
             data = str(data)
             data_array = data.split(",")
             data_array = [float(d) for d in data_array]
             logging.info(data_array)
-            """
-            r = requests.post("http://localhost:3000/data", json=json.loads(data))
+            x = convertTOJSON(data_array)
+            r = requests.post("http://localhost:3000/data", json=json.loads(x))
             if r and r.status_code == 200:
                 logging.info("Delivery at: " + timeNow())
-            """
+
+        except ValueError:
+            logging.warning("Error in data parsing: " + timeNow())
+        
         except json.JSONDecodeError:
-            logging.warning("Invalid JSON at: " + timeNow())
+            logging.warning("Invalid JSON" + str(x))
     
 client = mqtt.Client("rbp")
 client.username_pw_set("pi","codexpress")

@@ -30,13 +30,12 @@ def on_connect(client, userdata,flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    logging.info(msg.topic + " " + str(msg.payload.decode()) + " " + timeNow())
+    logging.info("MQTT INCOMING MESSAGE: " + msg.topic + " " + str(msg.payload.decode()) + " at timestamp: " + timeNow())
     if msg.payload == 'exit':
         logging.info("Recieved exit command")
         client.disconnect()
     else:
         data = msg.payload.decode()
-        logging.info("Recieved data: " + str(data) + " TimeStamp: " + timeNow())
         x = None
         try:
             data = str(data)
@@ -44,7 +43,8 @@ def on_message(client, userdata, msg):
             data_array = [float(d) for d in data_array]
             logging.info(data_array)
             x = convertTOJSON(data_array)
-            r = requests.post("http://localhost:3000/data", json=json.loads(x))
+            logging.info("DATA ENTRY: " + str(x))
+            r = requests.post("http://localhost:3000/data", json=x)
             if r and r.status_code == 200:
                 logging.info("Delivery at: " + timeNow())
 
